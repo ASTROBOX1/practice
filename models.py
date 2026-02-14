@@ -1,6 +1,10 @@
 
+from catboost import CatBoostClassifier, CatBoostRegressor
+from catboost import CatBoostClassifier
+from lightgbm import LGBMClassifier, LGBMRegressor
+from lightgbm import LGBMClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import BaggingClassifier, ExtraTreesClassifier
+from sklearn.ensemble import BaggingClassifier, ExtraTreesClassifier, HistGradientBoostingClassifier, HistGradientBoostingRegressor
 
 
 from sklearn.neighbors import KNeighborsClassifier
@@ -36,8 +40,9 @@ from sklearn.ensemble import (
     GradientBoostingRegressor,
     AdaBoostRegressor
 )
-from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.utils import compute_class_weight
+from sklearn.metrics import mean_squared_error
+from xgboost import XGBClassifier, XGBRFRegressor
+from xgboost import XGBClassifier
 
 
 classifications_models = {
@@ -124,31 +129,38 @@ classifications_models = {
         random_state=100
     ),
 
-    # # ================= Gradient Boosting =================
-    # "GradientBoosting": GradientBoostingClassifier(
-    #     n_estimators=200,
-    #     learning_rate=0.1,
-    #     max_depth=3,
-    #     random_state=42
-    # ),
+    # ================= Gradient Boosting =================
+    "GradientBoosting": GradientBoostingClassifier(
+        n_estimators=200,
+        learning_rate=0.1,
+        max_depth=3,
+        random_state=42
+    ),
 
-    # # ================= AdaBoost =================
-    # "AdaBoost": AdaBoostClassifier(
-    #     n_estimators=100,
-    #     learning_rate=0.1,
-    #     random_state=42
-    # ),
+    # ================= AdaBoost =================
+    "AdaBoost": AdaBoostClassifier(
+        n_estimators=100,
+        learning_rate=0.1,
+        random_state=42
+    ),
 
-    # # ================= Naive Bayes =================
-    # "GaussianNB": GaussianNB(),
+    # ================= Naive Bayes =================
+    "GaussianNB": GaussianNB(),
 
-    # "BernoulliNB": BernoulliNB(
+    "BernoulliNB": BernoulliNB(
+        alpha=1.0,
+        binarize=0.0
+    ),
+
+    # "MultinomialNB": MultinomialNB(
     #     alpha=1.0,
-    #     binarize=0.0
+    #     fit_prior=True
     # ),
-
-    # ================= LDA =================
-    # "LDA": LinearDiscriminantAnalysis()
+    
+    "HistGradient Boosting":HistGradientBoostingClassifier(),
+    "XGBClassifier":XGBClassifier(),
+    "CatBoostClassifier":CatBoostClassifier(),
+    "LGBMClassifier":LGBMClassifier()
 }
 regression_models = {
 
@@ -218,7 +230,12 @@ regression_models = {
         n_estimators=100,
         learning_rate=0.1,
         random_state=42
-    )
+    ),
+    "HistGradient Boosting":HistGradientBoostingRegressor(),
+    "XGBRFRegressor":XGBRFRegressor(),
+    "CatBoostRegressor":CatBoostRegressor(),
+    "LGBMRegressor":LGBMRegressor()
+    
 }
 #classification_models لوب لل 
 def run_classification_models(models_dict, X_train, X_test, y_train, y_test):
