@@ -1,5 +1,6 @@
 
 from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import BaggingClassifier, ExtraTreesClassifier
 
 
 from sklearn.neighbors import KNeighborsClassifier
@@ -36,19 +37,22 @@ from sklearn.ensemble import (
     AdaBoostRegressor
 )
 from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.utils import compute_class_weight
 
 
 classifications_models = {
 
+    # ================= Logistic Regression =================
     "LogisticRegression": LogisticRegression(
         penalty="l2",
         C=1.0,
         solver="lbfgs",
         max_iter=1000,
-        class_weight=None,
+        class_weight="balanced",
         random_state=42
     ),
 
+    # ================= KNN =================
     "KNN": KNeighborsClassifier(
         n_neighbors=5,
         weights="uniform",
@@ -56,15 +60,7 @@ classifications_models = {
         p=2
     ),
 
-    "SVM": SVC(
-        C=1.0,
-        kernel="rbf",
-        gamma="scale",
-        probability=True,
-        class_weight=None,
-        random_state=42
-    ),
-
+    # ================= Decision Tree (Simple) =================
     "DecisionTree": DecisionTreeClassifier(
         criterion="gini",
         max_depth=None,
@@ -73,46 +69,86 @@ classifications_models = {
         random_state=42
     ),
 
+    # ================= Tuned Decision Tree =================
+    # "DecisionTree_Tuned": DecisionTreeClassifier(
+    #     criterion="entropy",
+    #     max_depth=5,
+    #     min_samples_split=10,
+    #     min_samples_leaf=5,
+    #     min_impurity_decrease=0.01,
+    #     ccp_alpha=0.1,
+    #     random_state=100
+    # ),
+
+    # ================= Random Forest (Simple) =================
     "RandomForest": RandomForestClassifier(
         n_estimators=200,
         max_depth=None,
         min_samples_split=2,
         min_samples_leaf=1,
         max_features="sqrt",
-        class_weight=None,
         random_state=42
     ),
 
-    "GradientBoosting": GradientBoostingClassifier(
-        n_estimators=200,
-        learning_rate=0.1,
-        max_depth=3,
-        subsample=1.0,
-        random_state=42
+    # # ================= Tuned Random Forest =================
+    # "RandomForest_Tuned": RandomForestClassifier(
+    #     n_estimators=50,
+    #     criterion="entropy",
+    #     max_depth=None,
+    #     max_features="sqrt",
+    #     random_state=100
+    # ),
+
+    # ================= Bagging =================
+    "Bagging": BaggingClassifier(
+        estimator=DecisionTreeClassifier(
+            criterion="entropy",
+            max_depth=5,
+            min_samples_split=10,
+            min_samples_leaf=5,
+            min_impurity_decrease=0.01,
+            ccp_alpha=0.1,
+            random_state=100
+        ),
+        n_estimators=50,
+        bootstrap=True,
+        random_state=100
     ),
 
-    "AdaBoost": AdaBoostClassifier(
-        n_estimators=100,
-        learning_rate=0.1,
-        random_state=42
+    # ================= Extra Trees =================
+    "ExtraTrees": ExtraTreesClassifier(
+        n_estimators=50,
+        criterion="entropy",
+        max_depth=None,
+        max_features="sqrt",
+        random_state=100
     ),
 
-    "GaussianNB": GaussianNB(
-        var_smoothing=1e-9
-    ),
+    # # ================= Gradient Boosting =================
+    # "GradientBoosting": GradientBoostingClassifier(
+    #     n_estimators=200,
+    #     learning_rate=0.1,
+    #     max_depth=3,
+    #     random_state=42
+    # ),
 
-    "MultinomialNB": MultinomialNB(
-        alpha=1.0
-    ),
+    # # ================= AdaBoost =================
+    # "AdaBoost": AdaBoostClassifier(
+    #     n_estimators=100,
+    #     learning_rate=0.1,
+    #     random_state=42
+    # ),
 
-    "BernoulliNB": BernoulliNB(
-        alpha=1.0,
-        binarize=0.0
-    ),
+    # # ================= Naive Bayes =================
+    # "GaussianNB": GaussianNB(),
 
-    "LDA": LinearDiscriminantAnalysis(
-        solver="svd"
-    )
+    # "BernoulliNB": BernoulliNB(
+    #     alpha=1.0,
+    #     binarize=0.0
+    # ),
+
+    # ================= LDA =================
+    # "LDA": LinearDiscriminantAnalysis()
 }
 regression_models = {
 
@@ -146,12 +182,12 @@ regression_models = {
         p=2
     ),
 
-    "SVR": SVR(
-        C=1.0,
-        kernel="rbf",
-        gamma="scale",
-        epsilon=0.1
-    ),
+    # "SVR": SVR(
+    #     C=1.0,
+    #     kernel="rbf",
+    #     gamma="scale",
+    #     epsilon=0.1
+    # ),
 
     "DecisionTree": DecisionTreeRegressor(
         criterion="squared_error",
